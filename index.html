@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>vue 实例对象</title>
+	<style>
+		.finshed{
+			text-decoration: underline;
+		}
+		.color{
+			font-size: 30px;
+		}
+		.green{
+			color: green;
+			font-size: 30px;
+		}
+	</style>
+</head>
+<body>
+	<div class="div1">
+		<my-component msgFromFather="你死了"> </my-component>
+		<h1>{{message}}</h1>
+		<input type="text" placeholder="请输入..." v-model="newItem" v-on:keyup.enter="doThis">
+		<ul>
+			<li v-for="item in items" class="color" :class="[{finshed:item.isFinshed}]" v-on:click="clickBtn(item)" >{{item.laber}}</li>
+		</ul>
+	</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue">	</script>
+<script>
+
+	var child = {
+		template: '<div class="green"><button v-on:click="you()">点击我！</button></div>'
+	}
+	new Vue({
+		el: '.div1',
+		data: {
+			
+				message: '这是一个列表',
+				items: [],
+				newItem:''
+		},
+		components: {
+			'my-component': child
+		},
+		created: function(){
+			this.fetch()
+		},
+		methods: {
+			clickBtn :function(item){
+				item.isFinshed = !item.isFinshed
+			},
+			doThis: function(){
+				this.items.push({
+					laber: this.newItem,
+					isFinshed: false
+				})
+				// this.save(this.newItem)
+				this.newItem = ''
+			},
+			save: function(val){
+				var keys = 'vueItem'
+				if(window.localStorage){
+					window.localStorage.setItem(keys,JSON.stringify(val))
+					console.log(window.localStorage)
+				}
+				console.log(keys)
+			},
+			fetch: function(){
+				var keys = 'vueItem'
+				this.items = JSON.parse(window.localStorage.getItem(keys || ''))
+			},
+			you: function(){
+				alert('你死了！！！')
+			}
+		},
+		watch: {
+			message: function (val, oldVal) {
+	      console.log('new: %s, old: %s', val, oldVal)
+	    },
+	    items: {
+	    	handler: function(items){
+	    		this.save(items)
+	    	},
+	    	deep: true
+	    }   
+		}
+		
+	})
+</script>
+</html>
